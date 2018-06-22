@@ -23,7 +23,6 @@ const app = {
   init: function(feedWanted) {
     request(URLS[feedWanted], function(error, response, xml) {
       if (!error && response.statusCode == 200) {
-        console.log("res works");
         var $ = cheerio.load(xml, {
           xml: { normalizWhitespace: true }
         });
@@ -51,11 +50,14 @@ const app = {
               .text()
           });
         });
-        posts.forEach(post => {
-          console.log("\x1b[30m", "\x1b[43m", post.title);
-          console.log("\x1b[0m", "\x1b[34m", post.creator + " AT " + post.date);
-          console.log("\x1b[0m", post.description);
-        });
+        let i = posts.length-1
+        while (i>=0){
+          console.log("\x1b[0m", posts[i].description);
+          console.log("\x1b[0m", "\x1b[34m", posts[i].creator + " AT " + posts[i].date);
+          console.log("\x1b[30m", "\x1b[43m", posts[i].title, "\x1b[0m", posts[i].link);
+          console.log("\x1b[0m")
+          i--;
+        }
       }
     });
   }
