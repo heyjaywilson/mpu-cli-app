@@ -9,7 +9,7 @@ const feedWanted = optimist.argv["feed"];
 const URLS = {
   a: "https://talk.macpowerusers.com/posts.rss",
   e: "https://talk.macpowerusers.com/c/episodes.rss",
-  h: "https://talk.macpowerusers.com/c/hardware.rss",
+  hw: "https://talk.macpowerusers.com/c/hardware.rss",
   s: "https://talk.macpowerusers.com/c/software.rss",
   hs: "https://talk.macpowerusers.com/c/homescreens.rss",
   w: "https://talk.macpowerusers.com/c/cool-workflows.rss",
