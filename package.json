@@ -1,6 +1,6 @@
 {
   "name": "mpu-cli-app",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A command line app that goes through the RSS feed of talk.macpowerusers.com",
   "main": "index.js",
   "bin": {
@@ -14,7 +14,6 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
     "inquirer": "^6.0.0",
-    "optimist": "^0.6.1",
     "request": "^2.87.0"
   },
   "devDependencies": {},
