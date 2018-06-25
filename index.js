@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 
+const inquirer = require("inquirer");
 const request = require("request");
 const cheerio = require("cheerio");
 const optimist = require("optimist");
 
-const feedWanted = optimist.argv["feed"];
+// const feedWanted = optimist.argv["feed"];
 
 const URLS = {
   a: "https://talk.macpowerusers.com/posts.rss",
@@ -19,9 +20,99 @@ const URLS = {
 
 const posts = [];
 
+const feed_question = {
+  type: "list",
+  name: "feed",
+  message: "Choose the feed you want",
+  choices: [
+    "Most recent posts",
+    "Episodes",
+    "Hardware",
+    "Software",
+    "Homescreens",
+    "Cool Workflows",
+    "Announcements",
+    "Uncategorized"
+  ],
+  filter: function(val) {
+    switch (val) {
+      case "Most recent posts":
+        return "a";
+        break;
+      case "Episodes":
+        return "e";
+        break;
+      case "Hardware":
+        return "hw";
+        break;
+      case "Software":
+        return "s";
+        break;
+      case "Homescreens":
+        return "hs";
+        break;
+      case "Cool Workflows":
+        return "w";
+        break;
+      case "Announcements":
+        return "A";
+        break;
+      default:
+      return 'u'
+        break;
+    }
+  }
+};
+const getNextPrev = {
+  type: "input",
+  name: "post",
+  message: "Next, previous, or quit? (n/p/q)"
+};
 const app = {
-  init: function(feedWanted) {
-    request(URLS[feedWanted], function(error, response, xml) {
+  init: function() {
+    inquirer.prompt(feed_question).then(answers => {
+      //console.log(answers.feed);
+      this.getFeed(answers.feed);
+    });
+  },
+  printPost(i) {
+    console.log(
+      "\x1b[30m",
+      "\x1b[43m",
+      posts[i].title,
+      "\x1b[0m",
+      posts[i].link
+    );
+    console.log(
+      "\x1b[0m",
+      "\x1b[34m",
+      posts[i].creator + " AT " + posts[i].date
+    );
+    console.log("\x1b[0m", posts[i].description);
+    console.log("\x1b[0m");
+    this.getPost(i);
+  },
+  getPost: async function(i) {
+    await inquirer.prompt(getNextPrev).then(answers => {
+      if (answers.post === "N" || answers.post === "n") {
+        i = i + 1;
+        this.printPost(i);
+      } else if (answers.post === "P" || answers.post === "p") {
+        if (i !== 0) {
+          i = i - 1;
+          this.printPost(i);
+        } else {
+          i = i;
+          this.printPost(i);
+        }
+      } else {
+        i = i + posts.length;
+        console.log("Enter mpu to look through another feed");
+      }
+    });
+  },
+  getFeed(feedLetter) {
+    request(URLS[feedLetter], (error, response, xml) => {
       if (!error && response.statusCode == 200) {
         var $ = cheerio.load(xml, {
           xml: { normalizWhitespace: true }
@@ -31,9 +122,7 @@ const app = {
             .find("description")
             .contents()
             .text();
-          let descript = $(html)
-            .remove("a")
-            .text();
+          let descript = $(html).text();
           posts.push({
             title: $(this)
               .find("title")
@@ -50,19 +139,17 @@ const app = {
               .text()
           });
         });
-        let i = posts.length-1
-        while (i>=0){
-          console.log("\x1b[0m", posts[i].description);
-          console.log("\x1b[0m", "\x1b[34m", posts[i].creator + " AT " + posts[i].date);
-          console.log("\x1b[30m", "\x1b[43m", posts[i].title, "\x1b[0m", posts[i].link);
-          console.log("\x1b[0m")
-          i--;
-        }
+        let i = 0;
+        this.printPost(i);
+      } else {
+        console.log(
+          "Cannot reach https://talk.macpowerusers.com \nCheck network connection"
+        );
       }
     });
   }
 };
 
-app.init(feedWanted);
+app.init();
 
 module.exports = app;

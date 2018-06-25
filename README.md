@@ -12,18 +12,6 @@ A command line application that outputs the RSS feeds from the [Mac Power Users 
 
 How to use the app
 
-1.  In the terminal, type `mpu --feed [argument]`
-    1.  Example for getting recent posts `mpu --feed -a`
-
-# Arguments
-
-| arg | what it does           |
-| --- | ---------------------- |
-| a   | gets most recent posts |
-| e   | gets the episode feed  |
-| hw   | gets the hardware feed |
-| s   | gets the software feed |
-| hs | gets the homescreen feed |
-| w | gets the workflow feed |
-| A | gets the announcements feed |
-| u | gets the uncategorized feed |
+1.  In the terminal, type `mpu` and hit enter
+2.  Use the arrow keys to navigate to which feed you want
+3.  Hit enter to select the feed
