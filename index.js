@@ -33,12 +33,47 @@ const getNextPrev = {
 const app = {
   init: function() {
     inquirer.prompt(feed_question).then(answers => {
-      console.log(answers.feed);
       this.getFeed(answers.feed);
     });
   },
+  printPost(i) {
+    console.log(
+      "\x1b[30m",
+      "\x1b[43m",
+      posts[i].title,
+      "\x1b[0m",
+      posts[i].link
+    );
+    console.log(
+      "\x1b[0m",
+      "\x1b[34m",
+      posts[i].creator + " AT " + posts[i].date
+    );
+    console.log("\x1b[0m", posts[i].description);
+    console.log("\x1b[0m");
+    this.getPost(i);
+  },
+  getPost: async function(i) {
+    await inquirer.prompt(getNextPrev).then(answers => {
+      if (answers.post === "N" || answers.post === "n") {
+        i = i + 1;
+        this.printPost(i);
+      } else if (answers.post === "P" || answers.post === "p") {
+        if (i !== 0) {
+          i = i - 1;
+          this.printPost(i);
+        } else {
+          i = i;
+          this.printPost(i);
+        }
+      } else {
+        i = i + posts.length;
+        console.log("Enter 'mpu' to look for another feed");
+      }
+    });
+  },
   getFeed(feedLetter) {
-    request(URLS[feedLetter], function(error, response, xml) {
+    request(URLS[feedLetter], (error, response, xml) => {
       if (!error && response.statusCode == 200) {
         var $ = cheerio.load(xml, {
           xml: { normalizWhitespace: true }
@@ -48,9 +83,10 @@ const app = {
             .find("description")
             .contents()
             .text();
-          let descript = $(html)
-            .remove("a")
-            .text();
+          let descript = $(html).text();
+          // $(html)
+          //   .remove("a")
+          //  .text();
           posts.push({
             title: $(this)
               .find("title")
@@ -68,59 +104,7 @@ const app = {
           });
         });
         let i = 0;
-        do {
-          console.log(
-            "\x1b[30m",
-            "\x1b[43m",
-            posts[i].title,
-            "\x1b[0m",
-            posts[i].link
-          );
-          console.log(
-            "\x1b[0m",
-            "\x1b[34m",
-            posts[i].creator + " AT " + posts[i].date
-          );
-          console.log("\x1b[0m", posts[i].description);
-          console.log("\x1b[0m");
-          inquirer.prompt(getNextPrev).then(answers=>{
-            if (answers.post === "N"){
-              i++;
-            }
-            else {
-              i = posts.length + 1;
-            }
-          })
-        } while (i < posts.length);
-        {
-          inquirer.prompt(getNextPrev).then(answers => {
-            if (answers.post == "N") {
-              i++;
-              console.log("\x1b[0m", posts[i].description);
-              console.log(
-                "\x1b[0m",
-                "\x1b[34m",
-                posts[i].creator + " AT " + posts[i].date
-              );
-              console.log(
-                "\x1b[30m",
-                "\x1b[43m",
-                posts[i].title,
-                "\x1b[0m",
-                posts[i].link
-              );
-              console.log("\x1b[0m");
-            }
-          });
-        }
-        // let i = posts.length-1
-        // while (i>=0){
-        //   console.log("\x1b[0m", posts[i].description);
-        //   console.log("\x1b[0m", "\x1b[34m", posts[i].creator + " AT " + posts[i].date);
-        //   console.log("\x1b[30m", "\x1b[43m", posts[i].title, "\x1b[0m", posts[i].link);
-        //   console.log("\x1b[0m")
-        //   i--;
-        // }
+        this.printPost(i);
       }
     });
   }
