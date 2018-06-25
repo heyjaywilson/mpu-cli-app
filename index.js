@@ -21,18 +21,57 @@ const URLS = {
 const posts = [];
 
 const feed_question = {
-  type: "input",
+  type: "list",
   name: "feed",
-  message: "What feed do you want?"
+  message: "Choose the feed you want",
+  choices: [
+    "Most recent posts",
+    "Episodes",
+    "Hardware",
+    "Software",
+    "Homescreens",
+    "Cool Workflows",
+    "Announcements",
+    "Uncategorized"
+  ],
+  filter: function(val) {
+    switch (val) {
+      case "Most recent posts":
+        return "a";
+        break;
+      case "Episodes":
+        return "e";
+        break;
+      case "Hardware":
+        return "hw";
+        break;
+      case "Software":
+        return "s";
+        break;
+      case "Homescreens":
+        return "hs";
+        break;
+      case "Cool Workflows":
+        return "w";
+        break;
+      case "Announcements":
+        return "A";
+        break;
+      default:
+      return 'u'
+        break;
+    }
+  }
 };
 const getNextPrev = {
   type: "input",
   name: "post",
-  message: "Next, previous, or quit? (N/P/Q)"
+  message: "Next, previous, or quit? (n/p/q)"
 };
 const app = {
   init: function() {
     inquirer.prompt(feed_question).then(answers => {
+      //console.log(answers.feed);
       this.getFeed(answers.feed);
     });
   },
@@ -68,7 +107,7 @@ const app = {
         }
       } else {
         i = i + posts.length;
-        console.log("Enter 'mpu' to look for another feed");
+        console.log("Enter mpu to look through another feed");
       }
     });
   },
@@ -84,9 +123,6 @@ const app = {
             .contents()
             .text();
           let descript = $(html).text();
-          // $(html)
-          //   .remove("a")
-          //  .text();
           posts.push({
             title: $(this)
               .find("title")
@@ -105,6 +141,10 @@ const app = {
         });
         let i = 0;
         this.printPost(i);
+      } else {
+        console.log(
+          "Cannot reach https://talk.macpowerusers.com \nCheck network connection"
+        );
       }
     });
   }

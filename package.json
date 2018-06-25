@@ -1,6 +1,6 @@
 {
   "name": "mpu-cli-app",
-  "version": "1.0.4",
+  "version": "2.0.0",
   "description": "A command line app that goes through the RSS feed of talk.macpowerusers.com",
   "main": "index.js",
   "bin": {
